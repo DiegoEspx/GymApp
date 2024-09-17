@@ -26,7 +26,7 @@ class EditPersonScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Editar Persona'),
+        title: const Text('Edit Person'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -37,7 +37,7 @@ class EditPersonScreen extends StatelessWidget {
             TextFormField(
               controller: nameController,
               decoration: InputDecoration(
-                labelText: 'Nombre',
+                labelText: 'Name',
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
               ),
@@ -48,7 +48,7 @@ class EditPersonScreen extends StatelessWidget {
             TextFormField(
               controller: phoneController,
               decoration: InputDecoration(
-                labelText: 'Teléfono',
+                labelText: 'Phone Number',
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
               ),
@@ -59,7 +59,7 @@ class EditPersonScreen extends StatelessWidget {
             TextFormField(
               controller: licenseController,
               decoration: InputDecoration(
-                labelText: 'Cédula',
+                labelText: 'License',
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
               ),
@@ -70,7 +70,7 @@ class EditPersonScreen extends StatelessWidget {
             TextFormField(
               controller: serviceKindController,
               decoration: InputDecoration(
-                labelText: 'Tipo de Servicio',
+                labelText: 'Type of Service',
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
               ),
@@ -94,7 +94,7 @@ class EditPersonScreen extends StatelessWidget {
                   );
                   Get.back(); // Volver a la pantalla anterior
                 },
-                child: const Text('Guardar Cambios'),
+                child: const Text('Save Changes'),
               ),
             ),
           ],
