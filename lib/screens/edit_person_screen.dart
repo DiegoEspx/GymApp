@@ -18,7 +18,6 @@ class EditPersonScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Prellenar los TextEditingController con los valores actuales
     nameController.text = person.name;
     phoneController.text = person.nPhone;
     licenseController.text = person.license;
@@ -76,7 +75,6 @@ class EditPersonScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-
             // Botón para guardar los cambios
             Center(
               child: ElevatedButton(
@@ -89,7 +87,7 @@ class EditPersonScreen extends StatelessWidget {
                       license: licenseController.text,
                       serviceKind: serviceKindController.text,
                       dateEntry: person
-                          .dateEntry, // Mantenemos la misma fecha de entrada
+                          .dateEntry, 
                     ),
                   );
                   Get.back(); // Volver a la pantalla anterior

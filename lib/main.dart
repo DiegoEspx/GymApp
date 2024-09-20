@@ -13,10 +13,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Cambiado de MaterialApp a GetMaterialApp
     return GetMaterialApp(
-      // Cambiado de MaterialApp a GetMaterialApp
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'GymGuard',
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
       ),

@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:proyectproducts/controllers/person_controllers.dart';
 import 'package:proyectproducts/models/person.dart';
-import 'edit_person_screen.dart'; // La pantalla para editar la persona
+import 'edit_person_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
 
   final PersonController personController = Get.put(PersonController());
 
-  // Controladores para los campos de entrada
   final TextEditingController nameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController licenseController = TextEditingController();
@@ -19,17 +18,63 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "CLIENT LIST",
-          style: TextStyle(
-              fontWeight: FontWeight.bold, // Texto en negritas
-              fontSize: 24, // Tamaño del texto
-              letterSpacing: 1.5, // Espacio entre letras
-              color: Colors.white),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color.fromARGB(255, 0, 64, 255),
+                Color.fromARGB(255, 3, 168, 245)
+              ],
+            ),
+          ),
         ),
-        centerTitle: true, // Centrar el título
-        backgroundColor:
-            const Color.fromARGB(255, 89, 74, 255), // Cambiar el color de fondo
+        title: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.fitness_center_outlined,
+                  size: 30,
+                  color: Colors.white,
+                  shadows: [
+                    Shadow(
+                      blurRadius: 5.0,
+                      color: Color.fromARGB(145, 4, 209, 241),
+                      offset: Offset(3, 3),
+                    ),
+                  ],
+                ), // Icono de pesa
+                SizedBox(width: 10),
+                Text(
+                  "GymGuard", // Título principal
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 28,
+                    letterSpacing: 1.5,
+                    color: Colors.white,
+                    shadows: [
+                      Shadow(
+                        blurRadius: 5.0,
+                        color: Color.fromARGB(145, 4, 209, 241),
+                        offset: Offset(3, 3),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 0.5),
+            Text(
+              "Client List", // Subtítulo
+              style: TextStyle(
+                fontSize: 16,
+                letterSpacing: 1.2,
+                color: Colors.white70,
+              ),
+            ),
+          ],
+        ),
       ),
       body: SafeArea(
         child: Column(
@@ -40,11 +85,10 @@ class HomeScreen extends StatelessWidget {
                   itemCount: personController.persons.length,
                   itemBuilder: (context, index) {
                     Person person = personController.persons[index];
-
                     return Card(
                       margin: const EdgeInsets.all(8.0),
-                      elevation: 14.0,
-                      shadowColor: const Color.fromARGB(255, 15, 4, 168),
+                      elevation: 13,
+                      shadowColor: const Color.fromARGB(182, 0, 115, 255),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0),
                       ),
@@ -54,7 +98,9 @@ class HomeScreen extends StatelessWidget {
                         title: Text(
                           person.name,
                           style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
+                              color: Color.fromARGB(255, 2, 0, 147),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,7 +114,6 @@ class HomeScreen extends StatelessWidget {
                             Text(
                                 'Date of Entry: ${person.dateEntry.toLocal().toString().split(' ')[0]}',
                                 style: const TextStyle(fontSize: 16)),
-                            // Aquí va el nuevo Obx
                             Obx(
                               () {
                                 return Text(
@@ -80,7 +125,8 @@ class HomeScreen extends StatelessWidget {
                                       color: person.serviceKind.toLowerCase() ==
                                               'monthly'
                                           ? Colors.red
-                                          : Colors.green,
+                                          : const Color.fromARGB(
+                                              255, 36, 199, 178),
                                       fontWeight: FontWeight.bold),
                                 );
                               },
@@ -91,7 +137,8 @@ class HomeScreen extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
-                              icon: const Icon(Icons.edit, color: Colors.blue),
+                              icon: const Icon(Icons.edit,
+                                  color: Color.fromARGB(255, 33, 61, 243)),
                               onPressed: () {
                                 Get.to(() => EditPersonScreen(
                                     person: person, index: index));
