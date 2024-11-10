@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "934677490399",
+    "project_id": "gymproj-ca550",
+    "storage_bucket": "gymproj-ca550.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:934677490399:android:36a6d64a4121abd87ad76a",
+        "android_client_info": {
+          "package_name": "com.example.proyectproducts"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSynaJByX-8XfcIsKZ13GuidBXE9ljH5E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

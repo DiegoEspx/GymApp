@@ -211,8 +211,8 @@ class HomeScreen extends StatelessWidget {
                             nPhone: phoneController.text,
                             license: licenseController.text,
                             serviceKind: serviceKindController.text,
-                            dateEntry:
-                                DateTime.now(), // Fecha de entrada actual
+                            dateEntry: DateTime.now(),
+                            password: '', id: '', // Fecha de entrada actual
                           ),
                         );
                         // Limpiar los campos

@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:proyectproducts/models/person.dart';
 
 class PersonController extends GetxController {
-  final box = GetStorage(); // Instancia de GetStorage
+  final FirebaseFirestore firestore =
+      FirebaseFirestore.instance; // Instancia de Firestore
   var persons = <Person>[].obs;
 
   @override
@@ -13,46 +14,86 @@ class PersonController extends GetxController {
     loadPersons(); // Cargar personas al iniciar
   }
 
-  // Método para guardar personas en el almacenamiento local
-  void savePersons() {
-    List<Map<String, dynamic>> personList =
-        persons.map((person) => person.toJson()).toList();
-    box.write('persons', personList);
+  // Método para guardar personas en Firestore
+  Future<void> savePersons() async {
+    try {
+      for (var person in persons) {
+        // Usar el campo 'id' como identificador único para cada persona
+        await firestore.collection('persons').doc(person.name).set({
+          'name': person.name,
+          'nPhone': person.nPhone,
+          'license': person.license,
+          'serviceKind': person.serviceKind,
+          'dateEntry': person.dateEntry.toIso8601String(),
+          'password': person.password,
+        });
+      }
+    } catch (e) {
+      print("Error al guardar persona: $e");
+    }
   }
 
-  // Método para cargar personas del almacenamiento local
-  void loadPersons() {
-    List<dynamic> storedPersons = box.read('persons') ?? [];
-    persons
-        .assignAll(storedPersons.map((data) => Person.fromJson(data)).toList());
-
-    // Iniciar el temporizador para cada persona que tenga un servicio de mensualidad
-    for (var person in persons) {
-      if (person.serviceKind.toLowerCase() == 'monthly') {
-        startTimer(person);
-      }
+  // Método para cargar personas desde Firestore
+  Future<void> loadPersons() async {
+    try {
+      QuerySnapshot snapshot = await firestore.collection('persons').get();
+      var docs = snapshot.docs;
+      persons.assignAll(
+        docs.map((doc) {
+          return Person.fromJson({
+            'name': doc['name'],
+            'nPhone': doc['nPhone'],
+            'license': doc['license'],
+            'serviceKind': doc['serviceKind'],
+            'dateEntry': DateTime.parse(doc['dateEntry']),
+            'password': doc['password'],
+          });
+        }).toList(),
+      );
+    } catch (e) {
+      print("Error al cargar personas: $e");
     }
   }
 
   // Método para agregar una persona
-  void addPerson(Person person) {
+  Future<void> addPerson(Person person) async {
     persons.add(person);
-    savePersons(); // Guardar después de agregar una persona
+    await savePersons(); // Guardar en Firestore después de agregar
     if (person.serviceKind.toLowerCase() == 'monthly') {
       startTimer(person); // Iniciar temporizador si el servicio es mensualidad
     }
   }
 
-  // Método para eliminar una persona
-  void deletePerson(int index) {
-    persons.removeAt(index);
-    savePersons(); // Guardar después de eliminar una persona
+  // Método para eliminar una persona de Firestore
+  Future<void> deletePerson(int index) async {
+    Person person = persons[index];
+    try {
+      await firestore
+          .collection('persons')
+          .doc(person.name)
+          .delete(); // Eliminar de Firestore
+      persons.removeAt(index);
+    } catch (e) {
+      print("Error al eliminar persona: $e");
+    }
   }
 
-  // Método para editar una persona
-  void editPerson(int index, Person updatedPerson) {
-    persons[index] = updatedPerson;
-    savePersons(); // Guardar después de editar una persona
+  // Método para editar una persona en Firestore
+  Future<void> editPerson(int index, Person updatedPerson) async {
+    Person oldPerson = persons[index];
+    try {
+      await firestore.collection('persons').doc(oldPerson.name).update({
+        'name': updatedPerson.name,
+        'nPhone': updatedPerson.nPhone,
+        'license': updatedPerson.license,
+        'serviceKind': updatedPerson.serviceKind,
+        'dateEntry': updatedPerson.dateEntry.toIso8601String(),
+        'password': updatedPerson.password,
+      });
+      persons[index] = updatedPerson; // Actualizar la persona localmente
+    } catch (e) {
+      print("Error al editar persona: $e");
+    }
   }
 
   // Calcular tiempo restante
