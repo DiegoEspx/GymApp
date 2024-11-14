@@ -1,7 +1,7 @@
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 
 class Person {
-  String id; // ID único para cada persona, que lo usaremos en Firestore
+  String id; // ID único para cada persona
   String name;
   String nPhone;
   String license;
