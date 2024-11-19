@@ -3,12 +3,13 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:proyectproducts/screens/login_screen.dart';
+import 'package:proyectproducts/screens/person_screen.dart';
+import 'package:proyectproducts/screens/home_screen.dart';
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
-    // Intentamos inicializar Firebase solo si no está inicializado previamente
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
@@ -30,7 +31,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
       ),
-      home: LoginScreen(), // Mostramos la pantalla de login inicialmente
+      initialRoute: '/login',
+      getPages: [
+        GetPage(name: '/login', page: () => LoginScreen()),
+        GetPage(name: '/person', page: () => PersonScreen()),
+        GetPage(name: '/home', page: () => HomeScreen()),
+      ],
     );
   }
 }
+

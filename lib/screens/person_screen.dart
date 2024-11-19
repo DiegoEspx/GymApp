@@ -59,8 +59,9 @@ class PersonScreen extends StatelessWidget {
     );
   }
 
-  void _logout() {
-    GetStorage().erase(); // Borrar datos almacenados
-    Get.offAllNamed('/login'); // Redirigir al login
-  }
+ void _logout() {
+  GetStorage().erase(); // Limpiar datos del almacenamiento
+  Get.offAllNamed('/login'); // Redirigir al LoginScreen usando la ruta nombrada
+}
+
 }
