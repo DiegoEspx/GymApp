@@ -15,6 +15,7 @@ class HomeScreen extends StatelessWidget {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController licenseController = TextEditingController();
   final TextEditingController serviceKindController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController(); // Nuevo controlador para la contraseña
 
   @override
   Widget build(BuildContext context) {
@@ -46,10 +47,10 @@ class HomeScreen extends StatelessWidget {
                       offset: Offset(3, 3),
                     ),
                   ],
-                ), // Icono de pesa
+                ),
                 SizedBox(width: 10),
                 Text(
-                  "GymGuard", // Título principal
+                  "GymGuard",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 28,
@@ -68,7 +69,7 @@ class HomeScreen extends StatelessWidget {
             ),
             SizedBox(height: 0.5),
             Text(
-              "Client List", // Subtítulo
+              "Client List",
               style: TextStyle(
                 fontSize: 16,
                 letterSpacing: 1.2,
@@ -200,12 +201,23 @@ class HomeScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(30))),
                   ),
                   const SizedBox(height: 10),
+                  TextField(
+                    controller: passwordController, // Campo de contraseña
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30)),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () {
                       if (nameController.text.isNotEmpty &&
                           phoneController.text.isNotEmpty &&
                           licenseController.text.isNotEmpty &&
-                          serviceKindController.text.isNotEmpty) {
+                          serviceKindController.text.isNotEmpty &&
+                          passwordController.text.isNotEmpty) {
                         // Add the person
                         personController.addPerson(
                           Person(
@@ -214,7 +226,7 @@ class HomeScreen extends StatelessWidget {
                             license: licenseController.text,
                             serviceKind: serviceKindController.text,
                             dateEntry: DateTime.now(),
-                            password: '', // Current entry date
+                            password: passwordController.text, // Contraseña
                           ),
                         );
                         // Clear fields
@@ -222,6 +234,7 @@ class HomeScreen extends StatelessWidget {
                         phoneController.clear();
                         licenseController.clear();
                         serviceKindController.clear();
+                        passwordController.clear();
                       } else {
                         Get.snackbar(
                           'Error',
@@ -243,11 +256,8 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Método para cerrar sesión
   void _logout() {
-    // Limpiar el rol almacenado en GetStorage
     GetStorage().erase();
-    // Redirigir al LoginScreen
-    Get.off(() => const LoginScreen());
+    Get.off(() => LoginScreen());
   }
 }

@@ -1,45 +1,21 @@
-import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:proyectproducts/screens/home_screen.dart';
-import 'package:proyectproducts/screens/person_screen.dart'; // Importamos PersonScreen
+import 'home_screen.dart';
+import 'person_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class LoginScreen extends StatelessWidget {
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final GetStorage storage = GetStorage();
 
-  @override
-  _LoginScreenState createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final storage = GetStorage();
-
-  // Método para simular el login
-  void _login() {
-    // Aquí deberías agregar la lógica de autenticación con Firebase o cualquier backend que estés usando
-    String username = _usernameController.text;
-    String password = _passwordController.text;
-
-    // Para este ejemplo, vamos a usar datos simulados
-    if (username == 'admin' && password == 'admin123') {
-      // Simulamos que el rol es 'admin'
-      storage.write('role', 'admin');
-      // Redirigimos a la pantalla de admin
-      Get.off(() => HomeScreen());
-    } else if (username == 'persona' && password == 'persona123') {
-      // Simulamos que el rol es 'persona'
-      storage.write('role', 'persona');
-      // Redirigimos a la pantalla de persona
-      Get.off(() => PersonScreen());
-    } else {
-      // Si las credenciales no son correctas, mostramos un mensaje de error
-      Get.snackbar('Error', 'Credenciales incorrectas',
-          snackPosition: SnackPosition.BOTTOM);
-    }
-  }
+  // Lista de admins predeterminados
+  final List<Map<String, String>> admins = [
+    {'username': 'admin1', 'password': 'admin123'},
+    {'username': 'admin2', 'password': 'admin456'},
+    // Agrega más admins aquí
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -49,45 +25,74 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextFormField(
-                controller: _usernameController,
-                decoration: const InputDecoration(labelText: 'Username'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingresa un nombre de usuario';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'Password'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingresa una contraseña';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState?.validate() ?? false) {
-                    _login();
-                  }
-                },
-                child: const Text('Iniciar sesión'),
-              ),
-            ],
-          ),
+        child: Column(
+          children: [
+            TextField(
+              controller: _usernameController,
+              decoration: const InputDecoration(labelText: 'Username'),
+            ),
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'Password'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _login,
+              child: const Text('Login'),
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  // Método para simular el login
+  void _login() async {
+    String username = _usernameController.text;
+    String password = _passwordController.text;
+
+    // Comprobar si las credenciales corresponden a un admin
+    final admin = admins.firstWhere(
+      (admin) => admin['username'] == username && admin['password'] == password,
+      orElse: () => {},
+    );
+
+    if (admin.isNotEmpty) {
+      // Si se encuentra el admin, simula que el rol es 'admin'
+      storage.write('role', 'admin');
+      // Redirigir a la pantalla de admin (HomeScreen)
+      Get.off(() => HomeScreen());
+    } else {
+      // Si no es admin, verificamos si es una persona en Firestore
+      _loginAsPerson(username, password);
+    }
+  }
+
+  // Método para verificar si la persona existe en Firestore
+  Future<void> _loginAsPerson(String license, String password) async {
+    try {
+      // Consulta a Firestore para verificar si existe una persona con esa cédula y contraseña
+      var querySnapshot = await FirebaseFirestore.instance
+          .collection('persons')
+          .where('license', isEqualTo: license)
+          .where('password', isEqualTo: password)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Si se encuentra un documento que coincide con la cédula y la contraseña
+        storage.write('role', 'persona');
+        // Redirigir a la pantalla de persona (PersonScreen)
+        Get.off(() => PersonScreen());
+      } else {
+        // Si no se encuentra la persona con esas credenciales, mostramos un mensaje de error
+        Get.snackbar('Error', 'Credenciales incorrectas',
+            snackPosition: SnackPosition.BOTTOM);
+      }
+    } catch (e) {
+      // Si hay un error con la consulta a Firestore, mostramos un mensaje
+      Get.snackbar('Error', 'Hubo un problema al autenticarte: $e',
+          snackPosition: SnackPosition.BOTTOM);
+    }
   }
 }

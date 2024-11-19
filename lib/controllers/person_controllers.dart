@@ -4,8 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:proyectproducts/models/person.dart';
 
 class PersonController extends GetxController {
-  final FirebaseFirestore firestore =
-      FirebaseFirestore.instance; // Instancia de Firestore
+  final FirebaseFirestore firestore = FirebaseFirestore.instance; // Instancia de Firestore
   var persons = <Person>[].obs;
 
   @override
@@ -18,15 +17,16 @@ class PersonController extends GetxController {
   Future<void> savePersons() async {
     try {
       for (var person in persons) {
-        // Usar el campo 'name' como identificador único para cada persona
-        await firestore.collection('persons').doc(person.name).set({
+        // Usar 'license' como ID único para cada persona en Firestore
+        await firestore.collection('persons').doc(person.license).set({
+          'id': person.license, // Usamos license como ID
           'name': person.name,
           'nPhone': person.nPhone,
           'license': person.license,
           'serviceKind': person.serviceKind,
-          'dateEntry': Timestamp.fromDate(
-              person.dateEntry), // Convertir DateTime a Timestamp
+          'dateEntry': Timestamp.fromDate(person.dateEntry), // Convertir DateTime a Timestamp
           'password': person.password,
+          'role': person.role,
         });
       }
     } catch (e) {
@@ -47,10 +47,7 @@ class PersonController extends GetxController {
   Future<void> deletePerson(int index) async {
     Person person = persons[index];
     try {
-      await firestore
-          .collection('persons')
-          .doc(person.name)
-          .delete(); // Eliminar de Firestore
+      await firestore.collection('persons').doc(person.license).delete(); // Usamos el 'license' como ID
       persons.removeAt(index);
     } catch (e) {
       print("Error al eliminar persona: $e");
@@ -61,13 +58,14 @@ class PersonController extends GetxController {
   Future<void> editPerson(int index, Person updatedPerson) async {
     Person oldPerson = persons[index];
     try {
-      await firestore.collection('persons').doc(oldPerson.name).update({
+      await firestore.collection('persons').doc(oldPerson.license).update({
         'name': updatedPerson.name,
         'nPhone': updatedPerson.nPhone,
         'license': updatedPerson.license,
         'serviceKind': updatedPerson.serviceKind,
         'dateEntry': updatedPerson.dateEntry.toIso8601String(),
         'password': updatedPerson.password,
+        'role': updatedPerson.role,
       });
       persons[index] = updatedPerson; // Actualizar la persona localmente
     } catch (e) {
@@ -81,6 +79,7 @@ class PersonController extends GetxController {
       return snapshot.docs.map((doc) {
         var dateEntry = doc['dateEntry'];
         return Person.fromJson({
+          'id': doc['id'], // ID obtenido de Firestore
           'name': doc['name'],
           'nPhone': doc['nPhone'],
           'license': doc['license'],
@@ -89,6 +88,7 @@ class PersonController extends GetxController {
               ? dateEntry.toDate()
               : DateTime.parse(dateEntry),
           'password': doc['password'],
+          'role': doc['role'] ?? 'client',
         });
       }).toList();
     });
@@ -97,8 +97,7 @@ class PersonController extends GetxController {
   // Calcular tiempo restante
   Map<String, int> calculateRemainingTime(Person person) {
     final now = DateTime.now();
-    final endDate =
-        person.dateEntry.add(const Duration(days: 30)); // Fecha final
+    final endDate = person.dateEntry.add(const Duration(days: 30)); // Fecha final
     final timeDifference = endDate.difference(now);
 
     int remainingDays = timeDifference.inDays;
@@ -118,12 +117,10 @@ class PersonController extends GetxController {
   void startTimer(Person person) {
     Timer.periodic(const Duration(seconds: 1), (timer) {
       if (persons.contains(person)) {
-        // Verificar que la persona todavía esté en la lista
         var remaining = calculateRemainingTime(person);
         person.remainingTime.value =
             'Time remaining: ${remaining['days']}d ${remaining['hours']}h ${remaining['minutes']}m ${remaining['seconds']}s';
 
-        // Cancelar el temporizador si el tiempo ha expirado
         if ((remaining['days'] ?? 0) <= 0 &&
             (remaining['hours'] ?? 0) <= 0 &&
             (remaining['minutes'] ?? 0) <= 0 &&
@@ -135,12 +132,5 @@ class PersonController extends GetxController {
         timer.cancel();
       }
     });
-
-    // Verificar si un usuario es admin
-    bool isAdmin(String license) {
-      final user =
-          persons.firstWhereOrNull((person) => person.license == license);
-      return user?.role == 'admin';
-    }
   }
 }

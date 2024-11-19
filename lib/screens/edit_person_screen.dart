@@ -18,6 +18,7 @@ class EditPersonScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Inicializamos los controladores con los valores actuales
     nameController.text = person.name;
     phoneController.text = person.nPhone;
     licenseController.text = person.license;
@@ -37,8 +38,7 @@ class EditPersonScreen extends StatelessWidget {
               controller: nameController,
               decoration: InputDecoration(
                 labelText: 'Name',
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
               ),
             ),
             const SizedBox(height: 10),
@@ -48,19 +48,17 @@ class EditPersonScreen extends StatelessWidget {
               controller: phoneController,
               decoration: InputDecoration(
                 labelText: 'Phone Number',
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
               ),
             ),
             const SizedBox(height: 10),
 
-            // Campo de texto para la cédula
+            // Campo de texto para la cédula (license)
             TextFormField(
               controller: licenseController,
               decoration: InputDecoration(
                 labelText: 'License',
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
               ),
             ),
             const SizedBox(height: 10),
@@ -70,11 +68,11 @@ class EditPersonScreen extends StatelessWidget {
               controller: serviceKindController,
               decoration: InputDecoration(
                 labelText: 'Type of Service',
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
               ),
             ),
             const SizedBox(height: 20),
+
             // Botón para guardar los cambios
             Center(
               child: ElevatedButton(
@@ -84,10 +82,11 @@ class EditPersonScreen extends StatelessWidget {
                     Person(
                       name: nameController.text,
                       nPhone: phoneController.text,
-                      license: licenseController.text,
+                      license: licenseController.text, // License es el ID
                       serviceKind: serviceKindController.text,
-                      dateEntry: person.dateEntry,
-                      password: '',
+                      dateEntry: person.dateEntry, // Mantener la misma fecha de entrada
+                      password: person.password, // Mantener el mismo password
+                      role: person.role, // Mantener el mismo rol (si es necesario)
                     ),
                   );
                   Get.back(); // Volver a la pantalla anterior

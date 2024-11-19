@@ -1,13 +1,14 @@
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 
 class Person {
+  String id;  // Asumimos que el 'id' es ahora un campo obligatorio, pero será igual a 'license'
   String name;
   String nPhone;
   String license;
   String serviceKind;
   DateTime dateEntry;
   String password;
-  String role; // Nuevo atributo para el rol
+  String role; // Atributo para el rol
   RxString remainingTime = ''.obs; // Variable reactiva para tiempo restante
 
   Person({
@@ -18,11 +19,12 @@ class Person {
     required this.dateEntry,
     required this.password,
     this.role = 'client', // Valor predeterminado para rol
-  });
+  }) : id = license; // El ID es igual al valor de license
 
   // Constructor de Person a partir de JSON
   Person.fromJson(Map<String, dynamic> json)
-      : name = json['name'],
+      : id = json['license'],  // Asignamos 'license' como 'id'
+        name = json['name'],
         nPhone = json['nPhone'],
         license = json['license'],
         serviceKind = json['serviceKind'],
@@ -40,6 +42,8 @@ class Person {
       'dateEntry': dateEntry.toIso8601String(),
       'password': password,
       'role': role,
+      'id': id,  // De todas formas, aseguramos incluir el 'id' al convertir a JSON
     };
   }
 }
+

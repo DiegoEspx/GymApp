@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
       ),
-      home: const LoginScreen(), // Mostramos la pantalla de login inicialmente
+      home: LoginScreen(), // Mostramos la pantalla de login inicialmente
     );
   }
 }
