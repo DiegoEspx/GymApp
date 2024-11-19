@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:proyectproducts/screens/person_subscreens/brazo_screen.dart';
+import 'package:proyectproducts/screens/person_subscreens/espalda_screen.dart';
+import 'package:proyectproducts/screens/person_subscreens/pecho_screen.dart';
+import 'package:proyectproducts/screens/person_subscreens/pierna_screen.dart';
 
 class PersonScreen extends StatelessWidget {
   final Map<String, dynamic> personData =
@@ -48,7 +52,47 @@ class PersonScreen extends StatelessWidget {
                     'Date of Entry: ${personData['dateEntry'] ?? 'N/A'}',
                     style: const TextStyle(fontSize: 18),
                   ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Mis Rutinas',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 10),
+                  Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              Get.to(() => const PechoScreen());
+                            },
+                            child: const Text('Pecho'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Get.to(() => const EspaldaScreen());
+                            },
+                            child: const Text('Espalda'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Get.to(() => const BrazoScreen());
+                            },
+                            child: const Text('Brazo'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Get.to(() => const PiernaScreen());
+                            },
+                            child: const Text('Pierna'),
+                          ),
+                        ],
+                  ),
+
+                        
+                  const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: _logout,
                     child: const Text('Logout'),
@@ -59,9 +103,8 @@ class PersonScreen extends StatelessWidget {
     );
   }
 
- void _logout() {
-  GetStorage().erase(); // Limpiar datos del almacenamiento
-  Get.offAllNamed('/login'); // Redirigir al LoginScreen usando la ruta nombrada
-}
-
+  void _logout() {
+    GetStorage().erase(); // Borrar datos almacenados
+    Get.offAllNamed('/login'); // Redirigir al LoginScreen usando la ruta nombrada
+  }
 }

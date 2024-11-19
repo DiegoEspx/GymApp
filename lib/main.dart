@@ -5,6 +5,10 @@ import 'package:get_storage/get_storage.dart';
 import 'package:proyectproducts/screens/login_screen.dart';
 import 'package:proyectproducts/screens/person_screen.dart';
 import 'package:proyectproducts/screens/home_screen.dart';
+import 'package:proyectproducts/screens/person_subscreens/brazo_screen.dart';
+import 'package:proyectproducts/screens/person_subscreens/espalda_screen.dart';
+import 'package:proyectproducts/screens/person_subscreens/pecho_screen.dart';
+import 'package:proyectproducts/screens/person_subscreens/pierna_screen.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -36,6 +40,10 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/login', page: () => LoginScreen()),
         GetPage(name: '/person', page: () => PersonScreen()),
         GetPage(name: '/home', page: () => HomeScreen()),
+        GetPage(name: '/pecho', page: () => const PechoScreen()),
+        GetPage(name: '/espalda', page: () => const EspaldaScreen()),
+        GetPage(name: '/brazo', page: () => const BrazoScreen()),
+        GetPage(name: '/pierna', page: () => const PiernaScreen()),
       ],
     );
   }
