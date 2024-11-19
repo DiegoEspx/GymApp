@@ -11,47 +11,26 @@ class PersonController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    loadPersons(); // Cargar personas al iniciar
+    // Aquí ya no necesitamos cargar las personas manualmente
   }
 
   // Método para guardar personas en Firestore
   Future<void> savePersons() async {
     try {
       for (var person in persons) {
-        // Usar el campo 'id' como identificador único para cada persona
+        // Usar el campo 'name' como identificador único para cada persona
         await firestore.collection('persons').doc(person.name).set({
           'name': person.name,
           'nPhone': person.nPhone,
           'license': person.license,
           'serviceKind': person.serviceKind,
-          'dateEntry': person.dateEntry.toIso8601String(),
+          'dateEntry': Timestamp.fromDate(
+              person.dateEntry), // Convertir DateTime a Timestamp
           'password': person.password,
         });
       }
     } catch (e) {
       print("Error al guardar persona: $e");
-    }
-  }
-
-  // Método para cargar personas desde Firestore
-  Future<void> loadPersons() async {
-    try {
-      QuerySnapshot snapshot = await firestore.collection('persons').get();
-      var docs = snapshot.docs;
-      persons.assignAll(
-        docs.map((doc) {
-          return Person.fromJson({
-            'name': doc['name'],
-            'nPhone': doc['nPhone'],
-            'license': doc['license'],
-            'serviceKind': doc['serviceKind'],
-            'dateEntry': DateTime.parse(doc['dateEntry']),
-            'password': doc['password'],
-          });
-        }).toList(),
-      );
-    } catch (e) {
-      print("Error al cargar personas: $e");
     }
   }
 
@@ -96,6 +75,25 @@ class PersonController extends GetxController {
     }
   }
 
+  // Obtener stream de personas desde Firestore (actualización en tiempo real)
+  Stream<List<Person>> getPersonStream() {
+    return firestore.collection('persons').snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) {
+        var dateEntry = doc['dateEntry'];
+        return Person.fromJson({
+          'name': doc['name'],
+          'nPhone': doc['nPhone'],
+          'license': doc['license'],
+          'serviceKind': doc['serviceKind'],
+          'dateEntry': (dateEntry is Timestamp)
+              ? dateEntry.toDate()
+              : DateTime.parse(dateEntry),
+          'password': doc['password'],
+        });
+      }).toList();
+    });
+  }
+
   // Calcular tiempo restante
   Map<String, int> calculateRemainingTime(Person person) {
     final now = DateTime.now();
@@ -137,5 +135,12 @@ class PersonController extends GetxController {
         timer.cancel();
       }
     });
+
+    // Verificar si un usuario es admin
+    bool isAdmin(String license) {
+      final user =
+          persons.firstWhereOrNull((person) => person.license == license);
+      return user?.role == 'admin';
+    }
   }
 }

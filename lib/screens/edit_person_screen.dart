@@ -87,7 +87,7 @@ class EditPersonScreen extends StatelessWidget {
                       license: licenseController.text,
                       serviceKind: serviceKindController.text,
                       dateEntry: person.dateEntry,
-                      password: '', id: '',
+                      password: '',
                     ),
                   );
                   Get.back(); // Volver a la pantalla anterior

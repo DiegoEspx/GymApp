@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:proyectproducts/controllers/person_controllers.dart';
 import 'package:proyectproducts/models/person.dart';
+import 'package:proyectproducts/screens/login_screen.dart';
 import 'edit_person_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -204,7 +206,7 @@ class HomeScreen extends StatelessWidget {
                           phoneController.text.isNotEmpty &&
                           licenseController.text.isNotEmpty &&
                           serviceKindController.text.isNotEmpty) {
-                        // Agregar la persona
+                        // Add the person
                         personController.addPerson(
                           Person(
                             name: nameController.text,
@@ -212,10 +214,10 @@ class HomeScreen extends StatelessWidget {
                             license: licenseController.text,
                             serviceKind: serviceKindController.text,
                             dateEntry: DateTime.now(),
-                            password: '', id: '', // Fecha de entrada actual
+                            password: '', // Current entry date
                           ),
                         );
-                        // Limpiar los campos
+                        // Clear fields
                         nameController.clear();
                         phoneController.clear();
                         licenseController.clear();
@@ -239,5 +241,13 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // Método para cerrar sesión
+  void _logout() {
+    // Limpiar el rol almacenado en GetStorage
+    GetStorage().erase();
+    // Redirigir al LoginScreen
+    Get.off(() => const LoginScreen());
   }
 }

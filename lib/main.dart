@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:proyectproducts/screens/home_screen.dart';
+import 'package:proyectproducts/screens/login_screen.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -24,14 +24,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Cambiado de MaterialApp a GetMaterialApp
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'GymGuard',
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
       ),
-      home: HomeScreen(),
+      home: const LoginScreen(), // Mostramos la pantalla de login inicialmente
     );
   }
 }
