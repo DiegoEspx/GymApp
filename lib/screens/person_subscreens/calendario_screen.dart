@@ -210,74 +210,124 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   void _showRoutinePopup(DateTime selectedDay) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Rutinas para ${selectedDay.toLocal().toString().split(' ')[0]}',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              ..._routines[selectedDay]!.map((routine) {
-                return ListTile(
-                  title: Text(routine),
-                );
-              }).toList(),
-              const SizedBox(height: 20),
-              const Text(
-                'Agregar más rutinas:',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      _addRoutineToExistingDay(selectedDay, 'Pecho');
-                    },
-                    child: const Text('Pecho'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      _addRoutineToExistingDay(selectedDay, 'Espalda');
-                    },
-                    child: const Text('Espalda'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      _addRoutineToExistingDay(selectedDay, 'Brazo');
-                    },
-                    child: const Text('Brazo'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      _addRoutineToExistingDay(selectedDay, 'Pierna');
-                    },
-                    child: const Text('Pierna'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context); // Cerrar el modal
-                },
-                child: const Text('Cerrar'),
-              ),
-            ],
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    builder: (context) {
+      return Container(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Rutinas para ${selectedDay.toLocal().toString().split(' ')[0]}',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            ..._routines[selectedDay]!.map((routine) {
+              return ListTile(
+                title: Text(routine),
+              );
+            }).toList(),
+            const SizedBox(height: 20),
+            const Text(
+              'Agregar más rutinas:',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    _addRoutineToExistingDay(selectedDay, 'Pecho');
+                  },
+                  child: const Text('Pecho'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    _addRoutineToExistingDay(selectedDay, 'Espalda');
+                  },
+                  child: const Text('Espalda'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    _addRoutineToExistingDay(selectedDay, 'Brazo');
+                  },
+                  child: const Text('Brazo'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    _addRoutineToExistingDay(selectedDay, 'Pierna');
+                  },
+                  child: const Text('Pierna'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                _confirmDelete(selectedDay); // Confirmación antes de eliminar
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              child: const Text('Eliminar Rutinas'),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context); // Cerrar el modal
+              },
+              child: const Text('Cerrar'),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+  void _confirmDelete(DateTime selectedDay) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Eliminar Rutinas'),
+        content: const Text('¿Estás seguro de que deseas eliminar todas las rutinas de este día?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Cerrar diálogo
+            },
+            child: const Text('Cancelar'),
           ),
-        );
-      },
-    );
-  }
+          TextButton(
+            onPressed: () {
+              _deleteAllRoutinesForDay(selectedDay); // Eliminar rutinas
+              Navigator.pop(context); // Cerrar diálogo
+              Navigator.pop(context); // Cerrar ventana flotante
+            },
+            child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+  void _deleteAllRoutinesForDay(DateTime day) {
+  setState(() {
+    _routines.remove(day); // Eliminar rutinas del mapa
+    _saveRoutines(); // Guardar cambios
+  });
+  Get.snackbar(
+    'Rutinas Eliminadas',
+    'Se eliminaron todas las rutinas asignadas al ${day.toLocal().toString().split(' ')[0]}',
+    snackPosition: SnackPosition.BOTTOM,
+    backgroundColor: Colors.red,
+    colorText: Colors.white,
+  );
+}
+
 
   void _addRoutineToExistingDay(DateTime day, String routine) {
     setState(() {
