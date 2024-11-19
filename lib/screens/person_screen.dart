@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:proyectproducts/screens/person_subscreens/brazo_screen.dart';
+import 'package:proyectproducts/screens/person_subscreens/calendario_screen.dart';
 import 'package:proyectproducts/screens/person_subscreens/espalda_screen.dart';
 import 'package:proyectproducts/screens/person_subscreens/pecho_screen.dart';
 import 'package:proyectproducts/screens/person_subscreens/pierna_screen.dart';
@@ -88,8 +89,16 @@ class PersonScreen extends StatelessWidget {
                             },
                             child: const Text('Pierna'),
                           ),
+                          
+
                         ],
                   ),
+                  ElevatedButton(
+                          onPressed: () {
+                            Get.to(() => const CalendarScreen());
+                          },
+                          child: const Text('Abrir Calendario'),
+                        ),
 
                         
                   const SizedBox(height: 20),
