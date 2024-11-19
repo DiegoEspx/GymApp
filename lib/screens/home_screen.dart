@@ -247,6 +247,10 @@ class HomeScreen extends StatelessWidget {
                     },
                     child: const Text('Add Customer'),
                   ),
+                  ElevatedButton(
+                    onPressed: _logout,
+                    child: const Text('Logout'),
+                  ),
                 ],
               ),
             ),
@@ -256,8 +260,9 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  
   void _logout() {
-    GetStorage().erase();
-    Get.off(() => LoginScreen());
+  GetStorage().erase(); // Limpiar datos del almacenamiento
+  Get.offAllNamed('/login');
   }
 }
