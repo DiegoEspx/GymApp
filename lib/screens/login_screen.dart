@@ -71,28 +71,29 @@ class LoginScreen extends StatelessWidget {
 
   // Método para verificar si la persona existe en Firestore
   Future<void> _loginAsPerson(String license, String password) async {
-    try {
-      // Consulta a Firestore para verificar si existe una persona con esa cédula y contraseña
-      var querySnapshot = await FirebaseFirestore.instance
-          .collection('persons')
-          .where('license', isEqualTo: license)
-          .where('password', isEqualTo: password)
-          .get();
+  try {
+    // Consulta a Firestore
+    var querySnapshot = await FirebaseFirestore.instance
+        .collection('persons')
+        .where('license', isEqualTo: license)
+        .where('password', isEqualTo: password)
+        .get();
 
-      if (querySnapshot.docs.isNotEmpty) {
-        // Si se encuentra un documento que coincide con la cédula y la contraseña
-        storage.write('role', 'persona');
-        // Redirigir a la pantalla de persona (PersonScreen)
-        Get.off(() => PersonScreen());
-      } else {
-        // Si no se encuentra la persona con esas credenciales, mostramos un mensaje de error
-        Get.snackbar('Error', 'Credenciales incorrectas',
-            snackPosition: SnackPosition.BOTTOM);
-      }
-    } catch (e) {
-      // Si hay un error con la consulta a Firestore, mostramos un mensaje
-      Get.snackbar('Error', 'Hubo un problema al autenticarte: $e',
+    if (querySnapshot.docs.isNotEmpty) {
+      // Datos del usuario autenticado
+      var personData = querySnapshot.docs.first.data();
+      GetStorage().write('loggedInPerson', personData); // Guardamos los datos en GetStorage
+      GetStorage().write('role', 'persona');
+      Get.off(() => PersonScreen()); // Redirigir a la pantalla de persona
+    } else {
+      Get.snackbar('Error', 'Credenciales incorrectas',
           snackPosition: SnackPosition.BOTTOM);
     }
+  } catch (e) {
+    Get.snackbar('Error', 'Hubo un problema al autenticarte: $e',
+        snackPosition: SnackPosition.BOTTOM);
   }
+}
+
+
 }

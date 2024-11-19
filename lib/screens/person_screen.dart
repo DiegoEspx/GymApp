@@ -1,38 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:proyectproducts/screens/login_screen.dart';
 
 class PersonScreen extends StatelessWidget {
-  const PersonScreen({super.key});
+  final Map<String, dynamic> personData =
+      GetStorage().read('loggedInPerson') ?? {};
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Persona Screen'),
+        title: const Text('My Profile'),
       ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Bienvenido, Persona!',
-              style: TextStyle(fontSize: 24),
-            ),
-            // Aquí puedes agregar más contenido específico para la persona
-          ],
-        ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: personData.isEmpty
+            ? const Center(
+                child: Text(
+                  'No data available',
+                  style: TextStyle(fontSize: 18),
+                ),
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Name: ${personData['name'] ?? 'N/A'}',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Phone: ${personData['nPhone'] ?? 'N/A'}',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'License: ${personData['license'] ?? 'N/A'}',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Service Type: ${personData['serviceKind'] ?? 'N/A'}',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Date of Entry: ${personData['dateEntry'] ?? 'N/A'}',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: _logout,
+                    child: const Text('Logout'),
+                  ),
+                ],
+              ),
       ),
     );
   }
 
-  // Método para cerrar sesión
   void _logout() {
-    // Limpiar el rol almacenado en GetStorage
-    GetStorage().erase();
-    // Redirigir al LoginScreen
-    Get.off(() => LoginScreen());
+    GetStorage().erase(); // Borrar datos almacenados
+    Get.offAllNamed('/login'); // Redirigir al login
   }
 }
