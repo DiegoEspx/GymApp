@@ -95,7 +95,7 @@ class PersonScreen extends StatelessWidget {
                   ),
                   ElevatedButton(
                           onPressed: () {
-                            Get.to(() => const CalendarScreen());
+                            Get.to(() => CalendarScreen(license: personData['license'] ?? ''));
                           },
                           child: const Text('Abrir Calendario'),
                         ),
