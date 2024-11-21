@@ -1,15 +1,18 @@
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
+
+import 'package:get/get.dart';
 
 class Person {
-  String id;  // Asumimos que el 'id' es ahora un campo obligatorio, pero será igual a 'license'
+  String id; // ID del documento
   String name;
   String nPhone;
   String license;
   String serviceKind;
   DateTime dateEntry;
   String password;
-  String role; // Atributo para el rol
-  RxString remainingTime = ''.obs; // Variable reactiva para tiempo restante
+  String role;
+  RxInt remainingDays = 0.obs; // Días restantes como variable reactiva
 
   Person({
     required this.name,
@@ -18,23 +21,27 @@ class Person {
     required this.serviceKind,
     required this.dateEntry,
     required this.password,
-    this.role = 'client', // Valor predeterminado para rol
-  }) : id = license; // El ID es igual al valor de license
+    this.role = 'client',
+  }) : id = license;
 
-  // Constructor de Person a partir de JSON
+  // Constructor desde Firestore (JSON)
   Person.fromJson(Map<String, dynamic> json)
-      : id = json['license'],  // Asignamos 'license' como 'id'
-        name = json['name'],
-        nPhone = json['nPhone'],
-        license = json['license'],
-        serviceKind = json['serviceKind'],
-        dateEntry = DateTime.parse(json['dateEntry']),
-        password = json['password'],
-        role = json['role'] ?? 'client'; // Si no está definido, será 'client'
+      : id = json['id'] ?? '',
+        name = json['name'] ?? '',
+        nPhone = json['nPhone'] ?? '',
+        license = json['license'] ?? '',
+        serviceKind = json['serviceKind'] ?? '',
+        dateEntry = json['dateEntry'] is Timestamp
+            ? (json['dateEntry'] as Timestamp).toDate()
+            : DateTime.parse(json['dateEntry']),
+        password = json['password'] ?? '',
+        role = json['role'] ?? 'client',
+        remainingDays = RxInt(json['remainingDays'] ?? 0);
 
-  // Convertir Person a JSON
+  // Conversión a JSON (para guardar en Firestore)
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'name': name,
       'nPhone': nPhone,
       'license': license,
@@ -42,8 +49,7 @@ class Person {
       'dateEntry': dateEntry.toIso8601String(),
       'password': password,
       'role': role,
-      'id': id,  // De todas formas, aseguramos incluir el 'id' al convertir a JSON
+      'remainingDays': remainingDays.value,
     };
   }
 }
-

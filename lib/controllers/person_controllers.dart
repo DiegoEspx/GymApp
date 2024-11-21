@@ -4,97 +4,110 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:proyectproducts/models/person.dart';
 
 class PersonController extends GetxController {
-  final FirebaseFirestore firestore = FirebaseFirestore.instance; // Instancia de Firestore
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
   var persons = <Person>[].obs;
 
   @override
   void onInit() {
     super.onInit();
-    // Aquí ya no necesitamos cargar las personas manualmente
+    // Escucha los cambios en la colección y actualiza la lista local
+    getPersonStream().listen((users) {
+      persons.assignAll(users);
+    });
   }
 
-  // Método para guardar personas en Firestore
-  Future<void> savePersons() async {
-    try {
-      for (var person in persons) {
-        // Usar 'license' como ID único para cada persona en Firestore
-        await firestore.collection('persons').doc(person.license).set({
-          'id': person.license, // Usamos license como ID
-          'name': person.name,
-          'nPhone': person.nPhone,
-          'license': person.license,
-          'serviceKind': person.serviceKind,
-          'dateEntry': Timestamp.fromDate(person.dateEntry), // Convertir DateTime a Timestamp
-          'password': person.password,
-          'role': person.role,
-        });
-      }
-    } catch (e) {
-      print("Error al guardar persona: $e");
-    }
-  }
-
-  // Método para agregar una persona
-  Future<void> addPerson(Person person) async {
-    persons.add(person);
-    await savePersons(); // Guardar en Firestore después de agregar
-    if (person.serviceKind.toLowerCase() == 'monthly') {
-      startTimer(person); // Iniciar temporizador si el servicio es mensualidad
-    }
-  }
-
-  // Método para eliminar una persona de Firestore
-  Future<void> deletePerson(int index) async {
-    Person person = persons[index];
-    try {
-      await firestore.collection('persons').doc(person.license).delete(); // Usamos el 'license' como ID
-      persons.removeAt(index);
-    } catch (e) {
-      print("Error al eliminar persona: $e");
-    }
-  }
-
-  // Método para editar una persona en Firestore
-  Future<void> editPerson(int index, Person updatedPerson) async {
-    Person oldPerson = persons[index];
-    try {
-      await firestore.collection('persons').doc(oldPerson.license).update({
-        'name': updatedPerson.name,
-        'nPhone': updatedPerson.nPhone,
-        'license': updatedPerson.license,
-        'serviceKind': updatedPerson.serviceKind,
-        'dateEntry': updatedPerson.dateEntry.toIso8601String(),
-        'password': updatedPerson.password,
-        'role': updatedPerson.role,
-      });
-      persons[index] = updatedPerson; // Actualizar la persona localmente
-    } catch (e) {
-      print("Error al editar persona: $e");
-    }
-  }
-
-  // Obtener stream de personas desde Firestore (actualización en tiempo real)
+  // Obtener usuarios de Firestore como Stream
   Stream<List<Person>> getPersonStream() {
     return firestore.collection('persons').snapshots().map((snapshot) {
       return snapshot.docs.map((doc) {
-        var dateEntry = doc['dateEntry'];
+        // Actualiza el campo remainingDays si no existe en Firestore
+        if (!(doc.data() as Map<String, dynamic>).containsKey('remainingDays')) {
+          firestore.collection('persons').doc(doc.id).update({
+            'remainingDays': 0,
+          });
+        }
         return Person.fromJson({
-          'id': doc['id'], // ID obtenido de Firestore
-          'name': doc['name'],
-          'nPhone': doc['nPhone'],
-          'license': doc['license'],
-          'serviceKind': doc['serviceKind'],
-          'dateEntry': (dateEntry is Timestamp)
-              ? dateEntry.toDate()
-              : DateTime.parse(dateEntry),
-          'password': doc['password'],
-          'role': doc['role'] ?? 'client',
+          'id': doc.id, // ID del documento
+          ...doc.data() as Map<String, dynamic>, // Datos del documento
         });
       }).toList();
     });
   }
 
-  // Calcular tiempo restante
+  // Guardar todos los usuarios en Firestore (sincronización manual)
+  Future<void> savePersons() async {
+    try {
+      for (var person in persons) {
+        await firestore.collection('persons').doc(person.license).set(person.toJson());
+      }
+    } catch (e) {
+      print("Error al guardar usuarios: $e");
+    }
+  }
+
+  // Agregar un nuevo usuario
+  Future<void> addPerson(Person person) async {
+  try {
+    // Subir el usuario a Firestore usando 'license' como ID único
+    await firestore.collection('persons').doc(person.license).set(person.toJson());
+
+    // Agregar el usuario a la lista local para que se refleje en tiempo real
+    persons.add(person);
+
+    // Configurar días restantes según el tipo de servicio
+    if (person.serviceKind.toLowerCase() == 'monthly') {
+      person.remainingDays.value = 30; // Días iniciales para mensualidad
+      startTimer(person); // Iniciar temporizador
+    } else if (person.serviceKind.toLowerCase() == 'tiketera') {
+      person.remainingDays.value = 10; // Días iniciales para tiketera
+    }
+
+    print("Usuario agregado exitosamente: ${person.name}");
+  } catch (e) {
+    print("Error al agregar usuario: $e");
+    Get.snackbar('Error', 'No se pudo agregar el usuario: $e',
+        snackPosition: SnackPosition.BOTTOM);
+  }
+}
+
+
+  // Eliminar un usuario
+  Future<void> deletePerson(int index) async {
+    Person person = persons[index];
+    try {
+      await firestore.collection('persons').doc(person.license).delete(); // Eliminar en Firestore
+      persons.removeAt(index); // Eliminar localmente
+    } catch (e) {
+      print("Error al eliminar persona: $e");
+    }
+  }
+
+  // Editar un usuario
+  Future<void> editPerson(int index, Person updatedPerson) async {
+    try {
+      await firestore
+          .collection('persons')
+          .doc(updatedPerson.license)
+          .update(updatedPerson.toJson()); // Actualizar en Firestore
+      persons[index] = updatedPerson; // Actualizar localmente
+    } catch (e) {
+      print("Error al editar persona: $e");
+    }
+  }
+
+  // Reducir días manualmente para usuarios con tiketera
+  void reduceDays(Person person) {
+    if (person.serviceKind.toLowerCase() == 'tiketera' &&
+        person.remainingDays.value > 0) {
+      person.remainingDays.value -= 1; // Reducir días restantes
+      syncRemainingDays(person); // Sincronizar con Firestore
+    } else {
+      Get.snackbar('Error', 'No quedan días disponibles para este usuario',
+          snackPosition: SnackPosition.BOTTOM);
+    }
+  }
+
+  // Calcular tiempo restante para mensualidad
   Map<String, int> calculateRemainingTime(Person person) {
     final now = DateTime.now();
     final endDate = person.dateEntry.add(const Duration(days: 30)); // Fecha final
@@ -113,24 +126,46 @@ class PersonController extends GetxController {
     };
   }
 
-  // Actualizar tiempo restante cada segundo
+  // Actualizar tiempo restante cada segundo para usuarios de mensualidad
   void startTimer(Person person) {
-    Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (persons.contains(person)) {
-        var remaining = calculateRemainingTime(person);
-        person.remainingTime.value =
-            'Time remaining: ${remaining['days']}d ${remaining['hours']}h ${remaining['minutes']}m ${remaining['seconds']}s';
+    Timer.periodic(const Duration(hours: 24), (timer) {
+      if (persons.contains(person) && person.serviceKind.toLowerCase() == 'monthly') {
+        person.remainingDays.value -= 1; // Reducir días restantes
+        syncRemainingDays(person); // Sincronizar con Firestore
 
-        if ((remaining['days'] ?? 0) <= 0 &&
-            (remaining['hours'] ?? 0) <= 0 &&
-            (remaining['minutes'] ?? 0) <= 0 &&
-            (remaining['seconds'] ?? 0) <= 0) {
-          person.remainingTime.value = 'Expired';
-          timer.cancel();
+        if (person.remainingDays.value <= 0) {
+          person.remainingDays.value = 0; // Evitar valores negativos
+          timer.cancel(); // Detener el temporizador
         }
       } else {
-        timer.cancel();
+        timer.cancel(); // Detener si el usuario no es mensualidad
       }
     });
   }
+
+  // Sincronizar días restantes con Firestore
+  void syncRemainingDays(Person person) {
+    firestore.collection('persons').doc(person.license).update({
+      'remainingDays': person.remainingDays.value,
+    });
+  }
+  Stream<List<Person>> getRecentPersonStream() {
+  // Obtiene el tiempo actual y resta 5 minutos
+  DateTime fiveMinutesAgo = DateTime.now().subtract(const Duration(minutes: 5));
+
+  return firestore
+      .collection('persons')
+      .where('dateEntry', isGreaterThan: fiveMinutesAgo) // Filtra por dateEntry mayor a hace 5 minutos
+      .snapshots()
+      .map((snapshot) {
+    // Mapea los documentos obtenidos a una lista de objetos Person
+    return snapshot.docs.map((doc) {
+      return Person.fromJson({
+        'id': doc.id, // Incluye el ID del documento
+        ...doc.data() as Map<String, dynamic>, // Los datos del documento
+      });
+    }).toList();
+  });
+}
+
 }

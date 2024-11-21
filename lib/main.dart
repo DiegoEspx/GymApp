@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:proyectproducts/screens/allUsers_screen.dart';
 import 'package:proyectproducts/screens/login_screen.dart';
 import 'package:proyectproducts/screens/person_screen.dart';
 import 'package:proyectproducts/screens/home_screen.dart';
@@ -44,6 +45,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/espalda', page: () => const EspaldaScreen()),
         GetPage(name: '/brazo', page: () => const BrazoScreen()),
         GetPage(name: '/pierna', page: () => const PiernaScreen()),
+        GetPage(name: '/allusers', page: () => AllUsersScreen()),
       ],
     );
   }
