@@ -11,31 +11,43 @@ class EspaldaScreen extends StatefulWidget {
 
 class _EspaldaScreenState extends State<EspaldaScreen> {
   final exercises = [
-    {"title": "Dominadas", "description": "Fortalece espalda alta y bíceps"},
-    {"title": "Remo con barra", "description": "Mejora postura y espalda media"},
-    {"title": "Jalón al pecho", "description": "Desarrolla dorsales y ancho"},
-    {"title": "Peso muerto", "description": "Trabaja espalda baja y fuerza general"},
+    {
+      "title": "Dominadas",
+      "description": "Fortalece espalda alta y bíceps",
+      "image": "assets/images/dominadas.png"
+    },
+    {
+      "title": "Remo con barra",
+      "description": "Mejora postura y espalda media",
+      "image": "assets/images/remo_con_barra.png"
+    },
+    {
+      "title": "Jalón al pecho",
+      "description": "Desarrolla dorsales y ancho",
+      "image": "assets/images/jalon_al_pecho.png"
+    },
+    {
+      "title": "Peso muerto",
+      "description": "Trabaja espalda baja y fuerza general",
+      "image": "assets/images/peso_muerto.png"
+    },
   ];
 
-  // Estados de cada ejercicio
   final List<RxBool> exerciseCompleted = [];
   final RxInt completedExercises = 0.obs;
 
-  // Cronómetro general de descanso
   final RxInt generalTimer = 120.obs; // 2 minutos en segundos
   Timer? generalTimerCountdown;
 
-  // Cronómetro individual
   final Map<int, RxInt> individualTimers = {};
 
   @override
   void initState() {
     super.initState();
 
-    // Inicializar estados
     for (var i = 0; i < exercises.length; i++) {
       exerciseCompleted.add(false.obs);
-      individualTimers[i] = RxInt(60); // Cada ejercicio tiene 60 segundos
+      individualTimers[i] = RxInt(60);
     }
   }
 
@@ -64,7 +76,6 @@ class _EspaldaScreenState extends State<EspaldaScreen> {
     completedExercises.value++;
 
     if (completedExercises.value == exercises.length) {
-      // Mostrar mensaje de éxito
       Get.snackbar(
         "¡Completaste todo!",
         "Has completado todos los ejercicios. ¡Buen trabajo!",
@@ -106,13 +117,22 @@ class _EspaldaScreenState extends State<EspaldaScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Obx(() => Text(
-                    'Descanso general: ${generalTimer.value}s',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.red,
-                    ),
+              Obx(() => Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Descanso general: ${generalTimer.value}s',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
+                      ),
+                      CircularProgressIndicator(
+                        value: generalTimer.value / 120,
+                        color: Colors.red,
+                      ),
+                    ],
                   )),
               const SizedBox(height: 20),
               Expanded(
@@ -126,11 +146,11 @@ class _EspaldaScreenState extends State<EspaldaScreen> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15)),
                         child: ListTile(
-                          leading: exerciseCompleted[index].value
-                              ? const Icon(Icons.check_circle,
-                                  color: Colors.green, size: 40)
-                              : const Icon(Icons.access_time,
-                                  color: Colors.blue, size: 40),
+                          leading: Image.asset(
+                            exercises[index]['image']!,
+                            height: 60,
+                            width: 60,
+                          ),
                           title: Text(
                             exercises[index]['title']!,
                             style: const TextStyle(
@@ -157,11 +177,22 @@ class _EspaldaScreenState extends State<EspaldaScreen> {
                                           color: Colors.green,
                                           fontWeight: FontWeight.bold),
                                     )
-                                  : Text(
-                                      'Tiempo restante: ${individualTimers[index]!.value}s',
-                                      style: const TextStyle(
+                                  : Row(
+                                      children: [
+                                        Text(
+                                          'Tiempo restante: ${individualTimers[index]!.value}s',
+                                          style: const TextStyle(
+                                              color: Colors.blue,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        CircularProgressIndicator(
+                                          value: individualTimers[index]!
+                                                  .value /
+                                              60,
                                           color: Colors.blue,
-                                          fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
                                     ),
                             ],
                           ),
@@ -202,3 +233,4 @@ class _EspaldaScreenState extends State<EspaldaScreen> {
     super.dispose();
   }
 }
+

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:proyectproducts/controllers/person_controllers.dart';
 import 'package:proyectproducts/models/person.dart';
+import 'package:proyectproducts/screens/generateQR_screen.dart';
 import 'edit_person_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -59,7 +60,14 @@ class HomeScreen extends StatelessWidget {
                 Navigator.pop(context);
               },
             ),
-            
+            ListTile(
+              leading: const Icon(Icons.qr_code),
+              title: const Text('Generar Código QR'),
+              onTap: () {
+                Navigator.pop(context); // Cierra el Drawer
+                Get.to(() => GenerateQRScreen(qrData: 'Contenido dinámico del QR'));
+              },
+            ),
             ListTile(
               leading: const Icon(Icons.person_add_sharp),
               title: const Text('allusers'),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:get/get.dart';
 import 'package:proyectproducts/models/person.dart';
 import 'package:proyectproducts/controllers/person_controllers.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class QRScannerScreen extends StatefulWidget {
   final Person loggedInPerson;
@@ -16,8 +16,7 @@ class QRScannerScreen extends StatefulWidget {
 class _QRScannerScreenState extends State<QRScannerScreen> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController? controller;
-  final PersonController personController = Get.put(PersonController());
-  bool isProcessing = false; // Evitar múltiples lecturas rápidas
+  bool isProcessing = false;
 
   @override
   void dispose() {
@@ -32,8 +31,9 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
       if (!isProcessing) {
         isProcessing = true;
 
-        // Verificar el contenido del código QR
-        if (scanData.code == 'VALID_QR_CODE') { // Cambia 'VALID_QR_CODE' por el valor esperado
+        // Verificar el QR con el identificador del usuario
+        final expectedQR = "TICKET_VALID_${widget.loggedInPerson.license}";
+        if (scanData.code == expectedQR) {
           useTicket();
         } else {
           Get.snackbar(
@@ -46,26 +46,28 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
         }
 
         Future.delayed(const Duration(seconds: 2), () {
-          isProcessing = false; // Permitir nuevas lecturas después de 2 segundos
+          isProcessing = false;
         });
       }
     });
   }
 
-  // Función para usar un ticket
   void useTicket() {
     if (widget.loggedInPerson.remainingDays.value > 0) {
       setState(() {
-        widget.loggedInPerson.remainingDays.value -= 1; // Descontar un ticket
+        widget.loggedInPerson.remainingDays.value -= 1;
       });
 
       // Sincronizar con Firestore
+      PersonController personController = Get.find();
       personController.syncRemainingDays(widget.loggedInPerson);
 
       Get.snackbar(
         'Éxito',
         'Has usado un ticket. Tickets restantes: ${widget.loggedInPerson.remainingDays.value}',
         snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
       );
     } else {
       Get.snackbar(
@@ -83,16 +85,6 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Escanear QR'),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color.fromARGB(255, 0, 64, 255),
-                Color.fromARGB(255, 3, 168, 245),
-              ],
-            ),
-          ),
-        ),
       ),
       body: Column(
         children: [
@@ -105,9 +97,9 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
           ),
           Expanded(
             flex: 1,
-            child: Center(
-              child: const Text(
-                'Escanea un código QR válido para usar un ticket.',
+            child: const Center(
+              child: Text(
+                'Escanea un código QR válido.',
                 style: TextStyle(fontSize: 16),
               ),
             ),
