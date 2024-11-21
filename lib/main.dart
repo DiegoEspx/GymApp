@@ -10,6 +10,7 @@ import 'package:proyectproducts/screens/person_subscreens/brazo_screen.dart';
 import 'package:proyectproducts/screens/person_subscreens/espalda_screen.dart';
 import 'package:proyectproducts/screens/person_subscreens/pecho_screen.dart';
 import 'package:proyectproducts/screens/person_subscreens/pierna_screen.dart';
+import 'package:proyectproducts/screens/person_subscreens/userDetails_screen.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -46,6 +47,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/brazo', page: () => const BrazoScreen()),
         GetPage(name: '/pierna', page: () => const PiernaScreen()),
         GetPage(name: '/allusers', page: () => AllUsersScreen()),
+        GetPage(name: '/user_details', page: () => const UserDetailsScreen())
       ],
     );
   }

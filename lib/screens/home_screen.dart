@@ -59,13 +59,7 @@ class HomeScreen extends StatelessWidget {
                 Navigator.pop(context);
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('Mi Perfil'),
-              onTap: () {
-                Get.toNamed('/person');
-              },
-            ),
+            
             ListTile(
               leading: const Icon(Icons.person_add_sharp),
               title: const Text('allusers'),

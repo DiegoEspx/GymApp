@@ -48,18 +48,22 @@ class PersonController extends GetxController {
   // Agregar un nuevo usuario
   Future<void> addPerson(Person person) async {
   try {
-    // Subir el usuario a Firestore usando 'license' como ID único
-    await firestore.collection('persons').doc(person.license).set(person.toJson());
-
-    // Agregar el usuario a la lista local para que se refleje en tiempo real
-    persons.add(person);
-
     // Configurar días restantes según el tipo de servicio
     if (person.serviceKind.toLowerCase() == 'monthly') {
       person.remainingDays.value = 30; // Días iniciales para mensualidad
-      startTimer(person); // Iniciar temporizador
     } else if (person.serviceKind.toLowerCase() == 'tiketera') {
       person.remainingDays.value = 10; // Días iniciales para tiketera
+    }
+
+    // Subir el usuario a Firestore usando 'license' como ID único
+    await firestore.collection('persons').doc(person.license).set(person.toJson());
+
+    // Agregar el usuario a la lista local para reflejarlo en la interfaz
+    persons.add(person);
+
+    // Iniciar temporizador solo si es mensualidad
+    if (person.serviceKind.toLowerCase() == 'monthly') {
+      startTimer(person);
     }
 
     print("Usuario agregado exitosamente: ${person.name}");
@@ -70,6 +74,7 @@ class PersonController extends GetxController {
   }
 }
 
+  
 
   // Eliminar un usuario
   Future<void> deletePerson(int index) async {

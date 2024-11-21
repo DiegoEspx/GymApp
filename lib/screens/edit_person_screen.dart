@@ -13,6 +13,7 @@ class EditPersonScreen extends StatelessWidget {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController licenseController = TextEditingController();
   final TextEditingController serviceKindController = TextEditingController();
+  final TextEditingController remainingDaysController = TextEditingController(); // Controller for remaining days
 
   final PersonController personController = Get.find();
 
@@ -23,6 +24,7 @@ class EditPersonScreen extends StatelessWidget {
     phoneController.text = person.nPhone;
     licenseController.text = person.license;
     serviceKindController.text = person.serviceKind;
+    remainingDaysController.text = person.remainingDays.value.toString(); // Inicializar con el valor actual de días restantes
 
     return Scaffold(
       appBar: AppBar(
@@ -71,23 +73,41 @@ class EditPersonScreen extends StatelessWidget {
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
               ),
             ),
+            const SizedBox(height: 10),
+
+            // Campo de texto para los días restantes (remaining days)
+            TextFormField(
+              controller: remainingDaysController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Remaining Days',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+              ),
+            ),
             const SizedBox(height: 20),
 
             // Botón para guardar los cambios
             Center(
               child: ElevatedButton(
                 onPressed: () {
+                  // Calcular los días restantes basados en el tipo de servicio
+                  int remainingDays = serviceKindController.text.toLowerCase() == 'monthly'
+                      ? 30
+                      : serviceKindController.text.toLowerCase() == 'tiketera'
+                          ? 10
+                          : int.tryParse(remainingDaysController.text) ?? person.remainingDays.value;
+
                   personController.editPerson(
                     index,
                     Person(
                       name: nameController.text,
                       nPhone: phoneController.text,
-                      license: licenseController.text, // License es el ID
+                      license: licenseController.text,
                       serviceKind: serviceKindController.text,
-                      dateEntry: person.dateEntry, // Mantener la misma fecha de entrada
-                      password: person.password, // Mantener el mismo password
-                      role: person.role, // Mantener el mismo rol (si es necesario)
-                    ),
+                      dateEntry: person.dateEntry,
+                      password: person.password,
+                      role: person.role,
+                    )..remainingDays.value = remainingDays,  // Actualizar los días restantes
                   );
                   Get.back(); // Volver a la pantalla anterior
                 },
