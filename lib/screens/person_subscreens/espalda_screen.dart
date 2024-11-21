@@ -14,22 +14,22 @@ class _EspaldaScreenState extends State<EspaldaScreen> {
     {
       "title": "Dominadas",
       "description": "Fortalece espalda alta y bíceps",
-      "image": "assets/images/dominadas.png"
+      "image": "assets/images/1.webp"
     },
     {
       "title": "Remo con barra",
       "description": "Mejora postura y espalda media",
-      "image": "assets/images/remo_con_barra.png"
+      "image": "assets/images/2.jpg"
     },
     {
       "title": "Jalón al pecho",
       "description": "Desarrolla dorsales y ancho",
-      "image": "assets/images/jalon_al_pecho.png"
+      "image": "assets/images/3.jpeg"
     },
     {
       "title": "Peso muerto",
       "description": "Trabaja espalda baja y fuerza general",
-      "image": "assets/images/peso_muerto.png"
+      "image": "assets/images/4.jpeg"
     },
   ];
 
@@ -117,22 +117,13 @@ class _EspaldaScreenState extends State<EspaldaScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Obx(() => Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Descanso general: ${generalTimer.value}s',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red,
-                        ),
-                      ),
-                      CircularProgressIndicator(
-                        value: generalTimer.value / 120,
-                        color: Colors.red,
-                      ),
-                    ],
+              Obx(() => Text(
+                    'Descanso general: ${generalTimer.value}s',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                    ),
                   )),
               const SizedBox(height: 20),
               Expanded(
@@ -145,31 +136,34 @@ class _EspaldaScreenState extends State<EspaldaScreen> {
                         elevation: 8,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15)),
-                        child: ListTile(
-                          leading: Image.asset(
-                            exercises[index]['image']!,
-                            height: 60,
-                            width: 60,
-                          ),
-                          title: Text(
-                            exercises[index]['title']!,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
-                          ),
-                          subtitle: Column(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                exercises[index]['description']!,
+                                exercises[index]['title']!,
                                 style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
                                 ),
                               ),
                               const SizedBox(height: 5),
+                              Text(
+                                exercises[index]['description']!,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Image.asset(
+                                exercises[index]['image']!,
+                                height: 150,
+                                fit: BoxFit.cover,
+                              ),
+                              const SizedBox(height: 10),
                               exerciseCompleted[index].value
                                   ? const Text(
                                       '¡Ejercicio completado!',
@@ -185,30 +179,17 @@ class _EspaldaScreenState extends State<EspaldaScreen> {
                                               color: Colors.blue,
                                               fontWeight: FontWeight.bold),
                                         ),
-                                        const SizedBox(width: 8),
-                                        CircularProgressIndicator(
-                                          value: individualTimers[index]!
-                                                  .value /
-                                              60,
-                                          color: Colors.blue,
+                                        const SizedBox(width: 10),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            startIndividualTimer(index);
+                                          },
+                                          child: const Text('Iniciar'),
                                         ),
                                       ],
                                     ),
                             ],
                           ),
-                          trailing: exerciseCompleted[index].value
-                              ? null
-                              : ElevatedButton(
-                                  onPressed: () {
-                                    startIndividualTimer(index);
-                                  },
-                                  child: const Text('Iniciar'),
-                                ),
-                          onTap: () {
-                            if (!exerciseCompleted[index].value) {
-                              markAsComplete(index);
-                            }
-                          },
                         ),
                       );
                     });
@@ -233,4 +214,5 @@ class _EspaldaScreenState extends State<EspaldaScreen> {
     super.dispose();
   }
 }
+
 
