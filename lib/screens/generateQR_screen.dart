@@ -1,14 +1,25 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 class GenerateQRScreen extends StatelessWidget {
-  final String qrData; // Contenido dinámico del QR
+  final String userId;
 
-  const GenerateQRScreen({super.key, required this.qrData});
+  GenerateQRScreen({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
-    final qrUrl =
-        'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=$qrData';
+    final qrData = Uuid().v4(); // Genera un identificador único
+
+    // Guardar QR en Firestore
+    FirebaseFirestore.instance.collection('qr_codes').doc(userId).set({
+      'qrData': qrData,
+      'userId': userId,
+      'createdAt': FieldValue.serverTimestamp(),
+      'isUsed': false, // Indica que aún no se ha utilizado
+    });
+
+    final qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=$qrData';
 
     return Scaffold(
       appBar: AppBar(

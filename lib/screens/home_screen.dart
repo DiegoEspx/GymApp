@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:proyectproducts/controllers/person_controllers.dart';
 import 'package:proyectproducts/models/person.dart';
-import 'package:proyectproducts/screens/generateQR_screen.dart';
 import 'edit_person_screen.dart';
+import 'generateQR_screen.dart'; // Asegúrate de importar esta pantalla
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
@@ -65,7 +65,8 @@ class HomeScreen extends StatelessWidget {
               title: const Text('Generar Código QR'),
               onTap: () {
                 Navigator.pop(context); // Cierra el Drawer
-                Get.to(() => GenerateQRScreen(qrData: 'Contenido dinámico del QR'));
+                // Usamos un userId ficticio para la generación
+                Get.to(() => GenerateQRScreen(userId: 'adminUser123'));
               },
             ),
             ListTile(
@@ -167,8 +168,7 @@ class HomeScreen extends StatelessWidget {
                                       person: person, index: index));
                                 },
                               ),
-                              if (person.serviceKind.toLowerCase() ==
-                                  'tiketera')
+                              if (person.serviceKind.toLowerCase() == 'tiketera')
                                 IconButton(
                                   icon: const Icon(Icons.remove_circle,
                                       color: Colors.orange),
@@ -294,4 +294,3 @@ class HomeScreen extends StatelessWidget {
     Get.offAllNamed('/login');
   }
 }
-

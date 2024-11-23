@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:get/get.dart';
@@ -25,32 +26,51 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
   }
 
   void _onQRViewCreated(QRViewController qrController) {
-    controller = qrController;
+  controller = qrController;
 
-    controller!.scannedDataStream.listen((scanData) {
-      if (!isProcessing) {
-        isProcessing = true;
+  controller!.scannedDataStream.listen((scanData) async {
+    if (!isProcessing) {
+      isProcessing = true;
 
-        // Verificar el QR con el identificador del usuario
-        final expectedQR = "TICKET_VALID_${widget.loggedInPerson.license}";
-        if (scanData.code == expectedQR) {
+      // Busca el QR en Firestore
+      final query = await FirebaseFirestore.instance
+          .collection('qr_codes')
+          .where('qrData', isEqualTo: scanData.code)
+          .get();
+
+      if (query.docs.isNotEmpty) {
+        final doc = query.docs.first;
+
+        if (doc['isUsed'] == false) {
+          // Marca como usado
+          doc.reference.update({'isUsed': true});
           useTicket();
         } else {
           Get.snackbar(
             'Error',
-            'El código QR no es válido.',
+            'El código QR ya fue usado.',
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: Colors.red,
             colorText: Colors.white,
           );
         }
-
-        Future.delayed(const Duration(seconds: 2), () {
-          isProcessing = false;
-        });
+      } else {
+        Get.snackbar(
+          'Error',
+          'El código QR no es válido.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
       }
-    });
-  }
+
+      Future.delayed(const Duration(seconds: 2), () {
+        isProcessing = false;
+      });
+    }
+  });
+}
+
 
   void useTicket() {
     if (widget.loggedInPerson.remainingDays.value > 0) {
