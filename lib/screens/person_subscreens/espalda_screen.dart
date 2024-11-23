@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:proyectproducts/views/splash_screen.dart';
 
 class EspaldaScreen extends StatefulWidget {
   const EspaldaScreen({super.key});
@@ -233,6 +234,15 @@ class _EspaldaScreenState extends State<EspaldaScreen> {
               ElevatedButton(
                 onPressed: startGeneralTimer,
                 child: const Text('Iniciar descanso general'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => SplashScreen()),
+                  );
+                },
+                child: const Text('Iniciar Contador de Push-Ups'),
               ),
             ],
           ),

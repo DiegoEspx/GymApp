@@ -11,6 +11,8 @@ import 'package:proyectproducts/screens/person_subscreens/espalda_screen.dart';
 import 'package:proyectproducts/screens/person_subscreens/pecho_screen.dart';
 import 'package:proyectproducts/screens/person_subscreens/pierna_screen.dart';
 import 'package:proyectproducts/screens/person_subscreens/userDetails_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:proyectproducts/models/push_up_model.dart'; // Asegúrate de importar el modelo
 import 'firebase_options.dart';
 
 void main() async {
@@ -31,25 +33,27 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'GymGuard',
-      theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
+    return BlocProvider(
+      create: (context) => PushUpCounter(), // Inicialización de PushUpCounter
+      child: GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'GymGuard',
+        theme: ThemeData(
+          primarySwatch: Colors.deepPurple,
+        ),
+        initialRoute: '/login',
+        getPages: [
+          GetPage(name: '/login', page: () => LoginScreen()),
+          GetPage(name: '/person', page: () => PersonScreen()),
+          GetPage(name: '/home', page: () => HomeScreen()),
+          GetPage(name: '/pecho', page: () => const PechoScreen()),
+          GetPage(name: '/espalda', page: () => const EspaldaScreen()),
+          GetPage(name: '/brazo', page: () => const BrazoScreen()),
+          GetPage(name: '/pierna', page: () => const PiernaScreen()),
+          GetPage(name: '/allusers', page: () => AllUsersScreen()),
+          GetPage(name: '/user_details', page: () => const UserDetailsScreen())
+        ],
       ),
-      initialRoute: '/login',
-      getPages: [
-        GetPage(name: '/login', page: () => LoginScreen()),
-        GetPage(name: '/person', page: () => PersonScreen()),
-        GetPage(name: '/home', page: () => HomeScreen()),
-        GetPage(name: '/pecho', page: () => const PechoScreen()),
-        GetPage(name: '/espalda', page: () => const EspaldaScreen()),
-        GetPage(name: '/brazo', page: () => const BrazoScreen()),
-        GetPage(name: '/pierna', page: () => const PiernaScreen()),
-        GetPage(name: '/allusers', page: () => AllUsersScreen()),
-        GetPage(name: '/user_details', page: () => const UserDetailsScreen())
-      ],
     );
   }
 }
-
