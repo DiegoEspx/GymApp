@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:proyectproducts/views/splash_screen.dart';
+
 
 class EspaldaScreen extends StatefulWidget {
   const EspaldaScreen({super.key});

@@ -52,3 +52,18 @@ flutter:
     - assets/images/push-up-animation.json
     - assets/images/background_image.jpg
     - assets/images/usuario.png
+    ##ejercicios pierna
+    - assets/images/pierna1.jpeg
+    - assets/images/pierna2.webp
+    - assets/images/pierna3.webp
+    - assets/images/pierna4.jpg
+    ##ejercicios pecho
+    - assets/images/pecho1.jpg
+    - assets/images/pecho2.png
+    - assets/images/pecho3.webp
+    - assets/images/pecho4.jpeg
+    ##ejercicio brazo 
+    - assets/images/b1.webp
+    - assets/images/b2jpg.jpg
+    - assets/images/b3.webp
+    - assets/images/b4.jpeg
