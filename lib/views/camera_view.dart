@@ -122,7 +122,7 @@ class _CameraViewState extends State<CameraView> {
   if (_controller == null) return Container();
   if (_controller?.value.isInitialized == false) return Container();
   return Container(
-    color: Colors.white,
+    color: Colors.blueGrey,
     child: Stack(
       fit: StackFit.expand,
       children: <Widget>[
@@ -163,7 +163,7 @@ class _CameraViewState extends State<CameraView> {
         children: [
           const Text(
             'Counter',
-            style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold, fontSize: 14),
+            style: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold, fontSize: 27),
           ),
           Container(
             width: 70,
@@ -176,7 +176,7 @@ class _CameraViewState extends State<CameraView> {
               '${bloc.counter}',
               textAlign: TextAlign.center,
               style: const TextStyle(
-                color: Colors.orange,
+                color: Colors.blueAccent,
                 fontSize: 30.0,
                 fontWeight: FontWeight.bold,
               ),
@@ -201,7 +201,7 @@ Widget _backButton() => Positioned(
         BlocProvider.of<PushUpCounter>(context).reset();
         Navigator.of(context).pop();
       },
-      backgroundColor: Colors.orange, // Cambiado a blanco
+      backgroundColor: Colors.blue, // Cambiado a blanco
       child: const Icon(
         Icons.arrow_back_ios_outlined,
         size: 20,
@@ -220,7 +220,7 @@ Widget _detectionViewModeToggle() => Positioned(
     child: FloatingActionButton(
       heroTag: Object(),
       onPressed: widget.onDetectorViewModeChanged,
-      backgroundColor: Colors.orange, // Cambiado a blanco
+      backgroundColor: Colors.blueAccent, // Cambiado a blanco
       child: const Icon(
         Icons.photo_library_outlined,
         size: 25,
@@ -239,7 +239,7 @@ Widget _switchLiveCameraToggle() => Positioned(
     child: FloatingActionButton(
       heroTag: Object(),
       onPressed: _switchLiveCamera,
-      backgroundColor: Colors.orange, // Cambiado a blanco
+      backgroundColor: Colors.blueAccent, // Cambiado a blanco
       child: Icon(
         Platform.isIOS
             ? Icons.flip_camera_ios_outlined
