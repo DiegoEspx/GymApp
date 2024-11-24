@@ -4,8 +4,10 @@ import 'package:get_storage/get_storage.dart';
 import 'package:proyectproducts/screens/person_subscreens/brazo_screen.dart';
 import 'package:proyectproducts/screens/person_subscreens/calendario_screen.dart';
 import 'package:proyectproducts/screens/person_subscreens/espalda_screen.dart';
+import 'package:proyectproducts/screens/person_subscreens/map_screen.dart';
 import 'package:proyectproducts/screens/person_subscreens/pecho_screen.dart';
 import 'package:proyectproducts/screens/person_subscreens/pierna_screen.dart';
+import 'package:proyectproducts/screens/person_subscreens/reviews_screen.dart';
 import 'package:proyectproducts/screens/person_subscreens/userDetails_screen.dart';
 
 class PersonScreen extends StatelessWidget {
@@ -64,6 +66,26 @@ class PersonScreen extends StatelessWidget {
                 ));
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.rate_review),
+              title: const Text('Ver Reseñas'),
+              onTap: () {
+                Navigator.pop(context); // Cierra el Drawer
+                Get.to(() => ReviewsScreen(
+                  license: personData['license'] ?? '', // Reemplaza esto con la licencia del usuario logueado
+                ));
+              },
+            ),
+
+            ListTile(
+              leading: const Icon(Icons.map),
+              title: const Text('Ubicación del Gimnasio'),
+              onTap: () {
+                Navigator.pop(context); // Cierra el Drawer
+                Get.to(() => const GymLocationScreen());
+              },
+            ),
+
             ListTile(
               leading: const Icon(Icons.timer),
               title: const Text('Detalles del Servicio'),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-//import 'package:flutter_application_1/views/pose_detection_view.dart';
+
 import 'package:lottie/lottie.dart';
 import 'package:proyectproducts/views/pose_detection_view.dart';
 
@@ -50,7 +50,7 @@ class SplashScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Lottie.asset(
-                'assets/images/push-up-animation.json', 
+                'assets/push-up-animation.json', 
                 fit: BoxFit.cover,
                 height: 200, // Size adjusted for better visualization
               ),

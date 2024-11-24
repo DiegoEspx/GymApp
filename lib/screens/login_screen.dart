@@ -43,7 +43,7 @@ class LoginScreen extends StatelessWidget {
                     children: [
                       const CircleAvatar(
                         radius: 50,
-                        backgroundImage: AssetImage('assets/profile_default.png'), // Cambia la ruta si tienes la imagen en otro lugar
+                        backgroundImage: AssetImage('assets/images/usuario.png'), // Cambia la ruta si tienes la imagen en otro lugar
                       ),
                       const SizedBox(height: 20),
                       const Text(
@@ -96,6 +96,22 @@ class LoginScreen extends StatelessWidget {
                           ),
                         ),
                       ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Get.toNamed('/pose_detection'); // Navega a la pantalla de detección de poses
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.deepPurple, // Color del botón
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                        child: const Text(
+                          'Probar Pose Detection',
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                      )
+
                     ],
                   ),
                 ),
